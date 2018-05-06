@@ -11,18 +11,29 @@
 <script type="text/javascript">
 var d;
 function getTable(d){
-	var row = d[1];
-	var code = '<tr>';
+	var row;// = d[1];
+	var code;// = '<tr>';
+	var prkeys = '';
+	var keys;
 	var n = d.length;
-	for (var i in row){
-		code += '<td>' + i + '</td>';
+	/*for (var i in row){
+		code += '<th>' + i + '</th>';
 	}
-	code += "</tr>";
+	code += "</tr>";*/
 	//for (var j in d){
 	for(var j = 1; j<n; j++){
+		row = d[j];
+		keys = '';
+		for (var i in row){
+			keys += '<th>' + i + '</th>';
+		}
+		if (keys != prkeys){
+			code += '<tr>' + keys + '</tr>'
+		}
+		prkeys = keys;
 		code += '<tr>';
-		for (var i in d[j]){
-			code += '<td>' + d[j][i] + '</td>';
+		for (var i in row){
+			code += '<td>' + row[i] + '</td>';
 		}
 		code += '</tr>';
 	}
@@ -56,6 +67,11 @@ function sendAjx(){
 	<option value="getNews">Таблица новостей (без текста)</option>
 	<option value="getText">Текст новости по id</option>
 	<option value="getRubNews">Таблица рубрик для новости</option>
+	<option value="getAuthorNews">Все новости автора по id</option>
+	<option value="getNewsByRub">Список новостей по id рубрики</option>
+	<option value="getAuthList">Список авторов</option>
+	<option value="getNewsInfo">Информация о новостях по id</option>
+	
 </select>
 <input type="text" id="reqParam">
 <button onclick="sendAjx();">Запрос</button>

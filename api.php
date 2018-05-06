@@ -36,6 +36,35 @@
 			case 'getRubNews':
 				$result = $mysqli->query('SELECT * FROM news_rub');
 				break;
+			case 'getAuthorNews':
+				if (!empty($_POST['param'])){
+					$result = $mysqli->query('SELECT head,announce,text FROM news WHERE auth_id='.$mysqli->real_escape_string($_POST['param']));
+				} else {
+					$reqError = true;
+					$textError = 'Empty parameter';
+				}
+				break;
+			case 'getNewsByRub':
+				if (!empty($_POST['param'])){
+					$result = $mysqli->query('SELECT head,announce FROM `news` a WHERE a.id in (SELECT b.new_id FROM `news_rub` b WHERE b.rub_id = '.$mysqli->real_escape_string($_POST['param']).')');
+				} else {
+					$reqError = true;
+					$textError = 'Empty parameter';
+				}
+				break;
+			case 'getAuthList':
+				$result = $mysqli->query('SELECT fio FROM authors');
+				break;
+			case 'getNewsInfo':
+				if (!empty($_POST['param'])){
+					$result = $mysqli->query('SELECT head,announce FROM news WHERE id='.$mysqli->real_escape_string($_POST['param']));
+					if ($mysqli->errno) break;
+					$result2 = $mysqli->query('SELECT name \'rubric\' FROM news_rub a INNER JOIN rub b ON a.rub_id = b.id WHERE a.new_id='.$mysqli->real_escape_string($_POST['param']) );
+				} else {
+					$reqError = true;
+					$textError = 'Empty parameter';
+				}
+				break;
 		
 			default:
 				$reqError = true;
@@ -56,6 +85,12 @@
 				$ans[] = $row;
 			}
 			$result->free();
+			if (isset($result2)){
+				while($row = $result2->fetch_assoc()){
+					$ans[] = $row;
+				}
+				$result2->free();
+			}
 		}
 	}
 
