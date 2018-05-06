@@ -38,7 +38,6 @@
 	$mysqli->query('CREATE TABLE IF NOT EXISTS news (
 		`id` INT(11) NOT NULL AUTO_INCREMENT, 
 		`auth_id` INT(11) NOT NULL,
-		`rub_id` INT(11) NOT NULL, 
 		`head` VARCHAR(255), 
 		`announce` VARCHAR(255), 
 		`text` TEXT, 
