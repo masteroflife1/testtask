@@ -5,7 +5,6 @@
 	$dbname = 'catalog';
 	$reqError = false;
 	$textError = '';
-	//function sqlErr
 
 	$mysqli = new mysqli($dblocation, $dbuser, $dbpassw, $dbname);
 	if ($mysqli->connect_error) {
@@ -65,6 +64,43 @@
 					$textError = 'Empty parameter';
 				}
 				break;
+			case 'getNewsByHead':
+				if (!empty($_POST['param'])){
+					$result = $mysqli->query('SELECT head,announce,text FROM news WHERE head LIKE \'%'.$mysqli->real_escape_string($_POST['param']).'%\'');
+				} else {
+					$reqError = true;
+					$textError = 'Empty parameter';
+				}
+				break;
+			case 'getNewsByHeadRub':
+				if (!empty($_POST['param']) && !empty($_POST['param2'])){
+					$result = $mysqli->query('SELECT head,announce,text FROM news WHERE  head LIKE \'%'.$mysqli->real_escape_string($_POST['param']).'%\'  AND id IN (SELECT new_id FROM news_rub WHERE rub_id='.$mysqli->real_escape_string($_POST['param2']).')' );
+				} else {
+					$reqError = true;
+					$textError = 'Empty parameter';
+				}
+				break;
+			case 'getNewsByHeadRubIns':
+				if (!empty($_POST['param']) && !empty($_POST['param2'])){
+					$n = array($_POST['param2']);
+					$rubs = $n;
+					while (true) {
+						$s = implode(',',$n);
+						$result = $mysqli->query('SELECT id FROM rub WHERE mainid IN ('.$s.')');
+						if ($mysqli->errno) break;
+						if ($result->num_rows == 0) break;
+						$n = array();
+						while($row = $result->fetch_assoc()) $n[] = $row['id'];
+						$rubs = array_merge($rubs, $n);
+						$result->free();
+					}
+					if ($mysqli->errno) break;
+					$result = $mysqli->query('SELECT head,announce,text FROM news WHERE  head LIKE \'%'.$mysqli->real_escape_string($_POST['param']).'%\' AND id IN (SELECT new_id FROM news_rub WHERE rub_id IN ('.implode(',',$rubs).') )');
+				} else {
+					$reqError = true;
+					$textError = 'Empty parameter';
+				}
+				break;
 		
 			default:
 				$reqError = true;
@@ -94,7 +130,6 @@
 		}
 	}
 
-	//if (isset($result)) $result->free();
 	echo json_encode($ans);
 	$mysqli->close();
 ?>
