@@ -64,8 +64,9 @@
                 break;
             case 'getNewsInfo':
                 if (!empty($_POST['param'])) {
-                    $result = $mysqli->query('SELECT head,announce FROM news '
-					    .'WHERE id='.$mysqli->real_escape_string($_POST['param']));
+                    $result = $mysqli->query('SELECT head,announce,fio FROM news a'
+					    .' INNER JOIN authors b ON a.auth_id=b.id WHERE a.id='
+                        .$mysqli->real_escape_string($_POST['param']));
                     if ($mysqli->errno) break;
                     $result2 = $mysqli->query('SELECT name \'rubric\' '
 					    .'FROM news_rub a INNER JOIN rub b ON a.rub_id = b.id '
@@ -134,6 +135,9 @@
                 $textError = 'Unknown method';
                 break;
         }
+    } else {
+        $reqError = true;
+        $textError = 'Method not set';
     }
     
     if ($reqError) {
